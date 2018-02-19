@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Smelly Cat report</title>
+
+	<link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+
+	<script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+	<script src="https://code.highcharts.com/modules/treemap.js"></script>
+
+	<style type="text/css">
+		html{
+			background-color: #eaf0f2;
+		}
+
+		.header-basic-light{
+			padding: 20px 40px;
+			box-sizing:border-box;
+			box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.15);
+			height: 80px;
+			background-color: #fff;
+		}
+		
+		.header-basic-light .header-limiter {
+			max-width: 1200px;
+			text-align: center;
+			margin: 0 auto;
+		}
+		
+		/* Logo */
+		
+		.header-basic-light .header-limiter h1{
+			float: left;
+			font: normal 28px Cookie, Arial, Helvetica, sans-serif;
+			line-height: 40px;
+			margin: 0;
+		}
+		
+		.header-basic-light .header-limiter h1 span {
+			color: #5383d3;
+		}
+		
+		/* The header links */
+		
+		.header-basic-light .header-limiter a {
+			color: #5c616a;
+			text-decoration: none;
+		}
+		
+		.header-basic-light .header-limiter nav{
+			font:15px Arial, Helvetica, sans-serif;
+			line-height: 40px;
+			float: right;
+		}
+		
+		.header-basic-light .header-limiter nav a{
+			display: inline-block;
+			padding: 0 5px;
+			opacity: 0.9;
+			text-decoration:none;
+			color: #5c616a;
+			line-height:1;
+		}
+		
+		.header-basic-light .header-limiter nav {
+			cursor: pointer;
+		}
+		
+		.header-basic-light .header-limiter #nav-role a.selected {
+			background-color: #86a3d5;
+			color: #ffffff;
+			border-radius: 3px;
+			padding:6px 10px;
+		}
+		
+		.header-basic-light .header-limiter #nav-metric a.selected {
+			background-color: #33ccff;
+			color: #ffffff;
+			border-radius: 3px;
+			padding:6px 10px;
+		}
+		
+		/* Making the header responsive. */
+		
+		@media all and (max-width: 600px) {
+		
+			.header-basic-light {
+				padding: 20px 0;
+				height: 85px;
+			}
+		
+			.header-basic-light .header-limiter h1 {
+				float: none;
+				margin: -8px 0 10px;
+				text-align: center;
+				font-size: 24px;
+				line-height: 1;
+			}
+		
+			.header-basic-light .header-limiter nav {
+				line-height: 1;
+				float:none;
+			}
+		
+			.header-basic-light .header-limiter nav a {
+				font-size: 13px;
+			}
+		
+		}
+		
+		/* For the headers to look good, be sure to reset the margin and padding of the body */
+		
+		body {
+			margin:0;
+			padding:0;
+		}
+
+		#container {
+		    min-width: 700px;
+		    max-width: 700px;
+		    margin: 0 auto;
+		}
+        
+        .container_class {
+            min-width: 700px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+		.content {
+			margin: 20px;
+		}
+
+		footer {
+			font-family: Arial;
+			font-size: 0.8em;
+			text-align: center;
+		}
+
+		.table-row {
+			font-family: Arial;
+			font-size: 0.8em;
+			margin-bottom: 3px;
+
+		}
+
+		.table-row td {
+			border-bottom: 1px solid #5B3A8F;
+		}
+
+		#smellsText {
+			margin: 50px 20px;
+		}
+
+
+	</style>
+</head>
+
+<body>
+
+	<header class="header-basic-light">
+
+		<div class="header-limiter">
+
+			<h1><a href="http://www.github.com/mauricioaniche/smellycat">Smelly<span>Cat</span></a></h1>
+
+			<nav id="nav-metric">
+				<a class="action-metric selected">cbo</a>
+				<a class="action-metric">wmc</a>
+				<a class="action-metric">rfc</a>
+				<a class="action-metric">nom</a>
+				<a class="action-metric">lcom</a>
+				<a class="action-metric">smells</a>
+			</nav>
+			<nav id="nav-role">
+
+			</nav>
+		</div>
+
+	</header>
+
+	<div class="content" id="ck">
+		<div id="container"></div>
+	</div>
+    
+    <div id="parent-div">
+    
+    </div>
+
+	<div id="smellsText">
+	</div>
+
+	<footer>
+		<div>
+		Generated in 2018-02-17
+		</div>
+	</footer>
+
+</body>
+
+
+<script>
+
+var roles = ['activity','task','fragment','other'];
+var thresholds = {
+	activity: {
+		 cbo: [40,51,63],
+		lcom: [414,988,3596],
+		 nom: [36,54,94],
+		 rfc: [75,106,168],
+		 wmc: [141,222,425]
+	},
+	task: {
+		 cbo: [17,20,26],
+		lcom: [20,35,408],
+		 nom: [11,15,33],
+		 rfc: [55,71,89],
+		 wmc: [74,99,151]
+	},
+	fragment: {
+		 cbo: [41,50,65],
+		lcom: [432,776,1926],
+		 nom: [30,39,61],
+		 rfc: [98,123,170],
+		 wmc: [124,164,258]
+	},
+	other: {
+		 cbo: [23,31,48],
+		lcom: [414,988,3596],
+		 nom: [36,54,94],
+		 rfc: [75,106,168],
+		 wmc: [141,222,425]
+	}
+};
+
+var classes =
+[{"fragment":[],"other":[{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleAlertDialog.java","className":"codepath.apps.demointroandroid.SimpleAlertDialog","type":"class","dit":1,"noc":0,"wmc":3,"cbo":3,"lcom":3,"rfc":7,"nom":2,"specific":{"role":9999}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ExerciseActivityMapper.java","className":"codepath.apps.demointroandroid.ExerciseActivityMapper","type":"class","dit":1,"noc":0,"wmc":6,"cbo":4,"lcom":4,"rfc":4,"nom":4,"specific":{"role":9999}}],"task":[],"activity":[{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ActionBarMenuActivity.java","className":"codepath.apps.demointroandroid.ActionBarMenuActivity","type":"class","dit":2,"noc":0,"wmc":5,"cbo":7,"lcom":3,"rfc":9,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleBundleDemoActivity.java","className":"codepath.apps.demointroandroid.SimpleBundleDemoActivity","type":"class","dit":2,"noc":0,"wmc":6,"cbo":9,"lcom":3,"rfc":11,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicTextViewActivity.java","className":"codepath.apps.demointroandroid.BasicTextViewActivity","type":"class","dit":2,"noc":0,"wmc":4,"cbo":4,"lcom":6,"rfc":4,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ContactListActivity.java","className":"codepath.apps.demointroandroid.ContactListActivity","type":"class","dit":2,"noc":0,"wmc":8,"cbo":16,"lcom":4,"rfc":19,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicClickHandlersActivity.java","className":"codepath.apps.demointroandroid.BasicClickHandlersActivity","type":"class","dit":2,"noc":0,"wmc":5,"cbo":7,"lcom":10,"rfc":7,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicViewsActivity.java","className":"codepath.apps.demointroandroid.BasicViewsActivity","type":"class","dit":2,"noc":0,"wmc":2,"cbo":4,"lcom":1,"rfc":3,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ProgressBarActivity.java","className":"codepath.apps.demointroandroid.ProgressBarActivity","type":"class","dit":3,"noc":0,"wmc":12,"cbo":21,"lcom":18,"rfc":23,"nom":8,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ToastFormInputsActivity.java","className":"codepath.apps.demointroandroid.ToastFormInputsActivity","type":"class","dit":2,"noc":0,"wmc":3,"cbo":13,"lcom":1,"rfc":9,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/AsyncTaskPerformActivity.java","className":"codepath.apps.demointroandroid.AsyncTaskPerformActivity","type":"class","dit":3,"noc":0,"wmc":6,"cbo":8,"lcom":10,"rfc":8,"nom":5,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/TimePickerDemoActivity.java","className":"codepath.apps.demointroandroid.TimePickerDemoActivity","type":"class","dit":2,"noc":0,"wmc":3,"cbo":8,"lcom":1,"rfc":8,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/LayoutGravityActivity.java","className":"codepath.apps.demointroandroid.LayoutGravityActivity","type":"class","dit":2,"noc":0,"wmc":2,"cbo":4,"lcom":1,"rfc":3,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ExplicitIntentActivity.java","className":"codepath.apps.demointroandroid.ExplicitIntentActivity","type":"class","dit":2,"noc":0,"wmc":3,"cbo":7,"lcom":3,"rfc":7,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ViewAttributesActivity.java","className":"codepath.apps.demointroandroid.ViewAttributesActivity","type":"class","dit":2,"noc":0,"wmc":2,"cbo":5,"lcom":1,"rfc":9,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SmartImageDownloadActivity.java","className":"codepath.apps.demointroandroid.SmartImageDownloadActivity","type":"class","dit":2,"noc":0,"wmc":5,"cbo":10,"lcom":10,"rfc":9,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleListViewActivity.java","className":"codepath.apps.demointroandroid.SimpleListViewActivity","type":"class","dit":2,"noc":0,"wmc":2,"cbo":7,"lcom":1,"rfc":5,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/DemoSelector.java","className":"codepath.apps.demointroandroid.DemoSelector","type":"class","dit":3,"noc":0,"wmc":20,"cbo":15,"lcom":112,"rfc":25,"nom":16,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ListViewClicksActivity.java","className":"codepath.apps.demointroandroid.ListViewClicksActivity","type":"class","dit":2,"noc":0,"wmc":3,"cbo":12,"lcom":1,"rfc":10,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/LinearLayoutDemoActivity.java","className":"codepath.apps.demointroandroid.LinearLayoutDemoActivity","type":"class","dit":2,"noc":0,"wmc":2,"cbo":4,"lcom":1,"rfc":3,"nom":2,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleReturnResultActivity.java","className":"codepath.apps.demointroandroid.SimpleReturnResultActivity","type":"class","dit":2,"noc":0,"wmc":3,"cbo":8,"lcom":3,"rfc":9,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/GridViewDemoActivity.java","className":"codepath.apps.demointroandroid.GridViewDemoActivity","type":"class","dit":3,"noc":0,"wmc":5,"cbo":15,"lcom":10,"rfc":12,"nom":5,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SpinnerWithToastActivity.java","className":"codepath.apps.demointroandroid.SpinnerWithToastActivity","type":"class","dit":2,"noc":0,"wmc":4,"cbo":10,"lcom":0,"rfc":12,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicImageDownloadActivity.java","className":"codepath.apps.demointroandroid.BasicImageDownloadActivity","type":"class","dit":2,"noc":0,"wmc":7,"cbo":10,"lcom":3,"rfc":14,"nom":3,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ImplicitIntentsActivity.java","className":"codepath.apps.demointroandroid.ImplicitIntentsActivity","type":"class","dit":2,"noc":0,"wmc":10,"cbo":11,"lcom":6,"rfc":11,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/PersistSettingsActivity.java","className":"codepath.apps.demointroandroid.PersistSettingsActivity","type":"class","dit":2,"noc":0,"wmc":4,"cbo":12,"lcom":0,"rfc":19,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/IntentWithResultActivity.java","className":"codepath.apps.demointroandroid.IntentWithResultActivity","type":"class","dit":2,"noc":0,"wmc":8,"cbo":7,"lcom":6,"rfc":9,"nom":4,"specific":{"role":1}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/PublishingInstructionsActivity.java","className":"codepath.apps.demointroandroid.PublishingInstructionsActivity","type":"class","dit":2,"noc":0,"wmc":2,"cbo":4,"lcom":1,"rfc":3,"nom":2,"specific":{"role":1}}]},{"fragment":[],"other":[],"task":[],"activity":[]}]
+;
+
+var smells=
+[[{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ActionBarMenuActivity.java","name":"codepath.apps.demointroandroid.ActionBarMenuActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleBundleDemoActivity.java","name":"codepath.apps.demointroandroid.SimpleBundleDemoActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicTextViewActivity.java","name":"codepath.apps.demointroandroid.BasicTextViewActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ContactListActivity.java","name":"codepath.apps.demointroandroid.ContactListActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicClickHandlersActivity.java","name":"codepath.apps.demointroandroid.BasicClickHandlersActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicViewsActivity.java","name":"codepath.apps.demointroandroid.BasicViewsActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ProgressBarActivity.java","name":"codepath.apps.demointroandroid.ProgressBarActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ToastFormInputsActivity.java","name":"codepath.apps.demointroandroid.ToastFormInputsActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/AsyncTaskPerformActivity.java","name":"codepath.apps.demointroandroid.AsyncTaskPerformActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/TimePickerDemoActivity.java","name":"codepath.apps.demointroandroid.TimePickerDemoActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/LayoutGravityActivity.java","name":"codepath.apps.demointroandroid.LayoutGravityActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ExplicitIntentActivity.java","name":"codepath.apps.demointroandroid.ExplicitIntentActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ViewAttributesActivity.java","name":"codepath.apps.demointroandroid.ViewAttributesActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SmartImageDownloadActivity.java","name":"codepath.apps.demointroandroid.SmartImageDownloadActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleAlertDialog.java","name":"codepath.apps.demointroandroid.SimpleAlertDialog","type":"class","role":{"name":"other","id":9999},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleListViewActivity.java","name":"codepath.apps.demointroandroid.SimpleListViewActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/DemoSelector.java","name":"codepath.apps.demointroandroid.DemoSelector","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ListViewClicksActivity.java","name":"codepath.apps.demointroandroid.ListViewClicksActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/LinearLayoutDemoActivity.java","name":"codepath.apps.demointroandroid.LinearLayoutDemoActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SimpleReturnResultActivity.java","name":"codepath.apps.demointroandroid.SimpleReturnResultActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ExerciseActivityMapper.java","name":"codepath.apps.demointroandroid.ExerciseActivityMapper","type":"class","role":{"name":"other","id":9999},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/GridViewDemoActivity.java","name":"codepath.apps.demointroandroid.GridViewDemoActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/SpinnerWithToastActivity.java","name":"codepath.apps.demointroandroid.SpinnerWithToastActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/BasicImageDownloadActivity.java","name":"codepath.apps.demointroandroid.BasicImageDownloadActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/ImplicitIntentsActivity.java","name":"codepath.apps.demointroandroid.ImplicitIntentsActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/PersistSettingsActivity.java","name":"codepath.apps.demointroandroid.PersistSettingsActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/IntentWithResultActivity.java","name":"codepath.apps.demointroandroid.IntentWithResultActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}},{"file":"/Users/saket/Documents/eclipse_workspace/smellycat-master/intro_android_demo/version_1/app/src/main/java/codepath/apps/demointroandroid/PublishingInstructionsActivity.java","name":"codepath.apps.demointroandroid.PublishingInstructionsActivity","type":"class","role":{"name":"activity","id":1},"smells":[],"interfaces":[],"attributes":{},"notes":{}}],[]]
+;
+
+function dataFrom(role, metric, ind) {
+	var d = [];
+	for(i = 0; i < classes[ind][role].length; i++) {
+		var item = classes[ind][role][i];
+
+		d.push({
+			name: '',
+			fullName: item["className"],
+			value: item[metric],
+			colorValue: item[metric]
+		});
+	}
+
+	return d;
+}
+
+function filter(role, metric) {
+    for(var ind=0;ind<classes.length;ind++){
+        plotChart(metric + " in " + role, thresholds[role][metric], dataFrom(role,metric,ind),ind);
+    }
+}
+
+function plotChart(title, thresholds, d, ind) {
+	$('#container'+ind.toString()).highcharts({
+
+		tooltip: {
+			formatter: function() {
+				return this.point.fullName + ": " + this.point.value;
+			}
+		},
+		colorAxis: {
+			dataClassColor: 'category',
+			dataClasses: [{
+				to: thresholds[0],
+				name: 'low'
+			}, {
+				from: thresholds[0],
+				to: thresholds[1],
+				name: 'moderate'
+			}, {
+				from: thresholds[1],
+				to: thresholds[2],
+				name: 'high'
+			}, {
+				from: thresholds[2],
+				name: 'very high'
+			}]
+		},
+	  
+		colors: [
+			'rgba(10,255,10,1)', 
+			'rgba(255,204,0,1)', 
+			'rgba(255,71,71,1)', 
+			'rgba(153,0,0,1)'
+		],
+		                
+	    series: [{
+	        type: 'treemap',
+	        layoutAlgorithm: 'squarified',
+	        data: d,
+	        turboThreshold: 0
+	    }],
+	    title: {
+	        text: title
+	    },
+	    chart: {
+	    	backgroundColor: 'rgba(255,255,255,0.002)'
+	    }
+	});
+}
+
+
+function action() {
+
+	var role = $("#nav-role").find(".selected").html();
+	var metric = $("#nav-metric").find(".selected").html();
+
+	console.log(role + " " + metric);
+	if(metric=="smells") {
+		$("#smellsText").show();
+		$("#ck").hide();
+		showSmells(role);
+	} else {
+		$("#smellsText").hide();
+		$("#ck").show();
+		filter(role,metric);
+	}
+}
+
+function showSmells(role) {
+
+	var app = ""
+	for(i=0; i<smells.length;i++) {
+		if(smells[i].role.name==role && smells[i].smells.length>0) {
+			app+="<tr class='table-row'>";
+			app+="<td width='80%'>" + smells[i].name + "</td>";
+			app+="<td>";
+			for(j=0; j<smells[i].smells.length;j++) {
+				app+=smells[i].smells[j].name + "<br>";
+			}
+			app+="</td>";
+			app+="</tr>";
+		}
+	}
+
+	app = "<table width=\"100%\">" + app + "</table>";
+	$("#smellsText").html(app);
+
+}
+
+function menu() {
+	for(i = 0; i < roles.length; i++) {
+		$("#nav-role").append("<a class=\"action-role " + (i==0?"selected":"") +"\">" + roles[i] + "</a>");
+	}
+}
+
+$(function(){
+    console.log(classes.length.toString());
+    console.log(smells.length.toString());
+    var parent_div = document.getElementById("parent-div");
+    for(var i=0;i<classes.length;i++){
+        var myDiv = document.createElement("div");
+        myDiv.id = "ck";
+        myDiv.className = "content";
+        var inner_div = document.createElement("div");
+        inner_div.id = "container"+i.toString();
+        inner_div.className = "container_class";
+        myDiv.appendChild(inner_div);
+        parent_div.appendChild(myDiv);
+    }
+});
+
+$(function() {
+	menu();
+	action();
+
+	$(".action-metric").click(function() {
+		$("#nav-metric").find(".selected").removeClass("selected");
+		$(this).addClass("selected");
+
+		action();
+	});
+
+	$(".action-role").click(function() {
+		$("#nav-role").find(".selected").removeClass("selected");
+		$(this).addClass("selected");
+
+		action();
+	});
+
+});
+</script>
+</html>
+

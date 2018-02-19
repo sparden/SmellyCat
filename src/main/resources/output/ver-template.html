@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Smelly Cat report</title>
+
+	<link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+
+	<script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+	<script src="https://code.highcharts.com/modules/treemap.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="style_css.css">
+</head>
+
+<body>
+
+	<header class="header-basic-light">
+
+		<div class="header-limiter">
+
+			<h1><a href="http://www.github.com/mauricioaniche/smellycat">Smelly<span>Cat</span></a></h1>
+
+			<nav id="nav-metric">
+				<a class="action-metric selected">cbo</a>
+				<a class="action-metric">wmc</a>
+				<a class="action-metric">rfc</a>
+				<a class="action-metric">nom</a>
+				<a class="action-metric">lcom</a>
+				<a class="action-metric">smells</a>
+			</nav>
+			<nav id="nav-role">
+
+			</nav>
+		</div>
+
+	</header>
+
+	<div class="content" id="ck">
+		<div id="container"></div>
+	</div>
+
+    <div id="parent-div">
+    </div>
+
+	<div id="smellsText">
+	</div>
+
+	<footer>
+		<div>
+		Generated in ##date##
+		</div>
+	</footer>
+
+</body>
+
+
+<script>
+
+##archThresholds##
+
+var classes =
+##ck##
+;
+
+var smells=
+##smells##
+;
+
+function dataFrom(role, metric, ind) {
+	var d = [];
+	for(i = 0; i < classes[ind][role].length; i++) {
+		var item = classes[ind][role][i];
+
+		d.push({
+			name: '',
+			fullName: item["className"],
+			value: item[metric],
+			colorValue: item[metric]
+		});
+	}
+
+	return d;
+}
+
+function filter(role, metric) {
+	for(var ind=0;ind<classes.length;ind++){
+		plotChart(metric + " in " + role, thresholds[role][metric], dataFrom(role,metric,ind), ind);
+	}
+}
+
+function plotChart(title, thresholds, d, ind) {
+
+	$('#container'+ind.toString()).highcharts({
+
+		tooltip: {
+			formatter: function() {
+				return this.point.fullName + ": " + this.point.value;
+			}
+		},
+		colorAxis: {
+			dataClassColor: 'category',
+			dataClasses: [{
+				to: thresholds[0],
+				name: 'low'
+			}, {
+				from: thresholds[0],
+				to: thresholds[1],
+				name: 'moderate'
+			}, {
+				from: thresholds[1],
+				to: thresholds[2],
+				name: 'high'
+			}, {
+				from: thresholds[2],
+				name: 'very high'
+			}]
+		},
+
+		colors: [
+			'rgba(10,255,10,1)',
+			'rgba(255,204,0,1)',
+			'rgba(255,71,71,1)',
+			'rgba(153,0,0,1)'
+		],
+
+	    series: [{
+	        type: 'treemap',
+	        layoutAlgorithm: 'squarified',
+	        data: d,
+	        turboThreshold: 0
+	    }],
+	    title: {
+	        text: title
+	    },
+	    chart: {
+	    	backgroundColor: 'rgba(255,255,255,0.002)'
+	    }
+	});
+}
+
+
+function action() {
+
+	var role = $("#nav-role").find(".selected").html();
+	var metric = $("#nav-metric").find(".selected").html();
+
+	console.log(role + " " + metric);
+	if(metric=="smells") {
+		$("#smellsText").show();
+		$("#ck").hide();
+		showSmells(role);
+	} else {
+		$("#smellsText").hide();
+		$("#ck").show();
+		filter(role,metric);
+	}
+}
+
+function showSmells(role) {
+
+	var app = ""
+	for(i=0; i<smells.length;i++) {
+		if(smells[i].role.name==role && smells[i].smells.length>0) {
+			app+="<tr class='table-row'>";
+			app+="<td width='80%'>" + smells[i].name + "</td>";
+			app+="<td>";
+			for(j=0; j<smells[i].smells.length;j++) {
+				app+=smells[i].smells[j].name + "<br>";
+			}
+			app+="</td>";
+			app+="</tr>";
+		}
+	}
+
+	app = "<table width=\"100%\">" + app + "</table>";
+	$("#smellsText").html(app);
+
+}
+
+function menu() {
+	for(i = 0; i < roles.length; i++) {
+		$("#nav-role").append("<a class=\"action-role " + (i==0?"selected":"") +"\">" + roles[i] + "</a>");
+	}
+}
+
+$(function(){
+    console.log(classes.length.toString());
+    console.log(smells.length.toString());
+    var parent_div = document.getElementById("parent-div");
+    for(var i=0;i<classes.length;i++){
+    var myDiv = document.createElement("div");
+    myDiv.id = "ck";
+    myDiv.className = "content";
+		myDiv.innerHTML = "<center><h3> Version "+i.toString()+" </h3></center>";
+    var inner_div = document.createElement("div");
+    inner_div.id = "container"+i.toString();
+    inner_div.className = "container_class";
+    myDiv.appendChild(inner_div);
+    parent_div.appendChild(myDiv);
+}
+});
+
+$(function() {
+	menu();
+	action();
+
+	$(".action-metric").click(function() {
+		$("#nav-metric").find(".selected").removeClass("selected");
+		$(this).addClass("selected");
+
+		action();
+	});
+
+	$(".action-role").click(function() {
+		$("#nav-role").find(".selected").removeClass("selected");
+		$(this).addClass("selected");
+
+		action();
+	});
+
+});
+</script>
+</html>
