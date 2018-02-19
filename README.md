@@ -68,6 +68,18 @@ usage: java -jar smellycat
  -p,--project <arg>   Path to the project
 ```
 
+# Version Comparison Extension
+
+A ```-v``` option has been added to the API for version comparison. If included, The project directory must contain folders with different versions of the system. A sample project ( intro_android_demo) , API invocation -
+
+```
+-arch android -o smelout -otype html -p intro_android_demo -v
+
+```
+
+and output files ( `smeloutresult.html`, `style_css.css`) has been included.
+
+
 # Publications
 
 TODO: list of publications here
