@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:padding="@dimen/space_2"
+    android:layout_height="@dimen/navigation_view_header"
+    android:background="?attr/colorPrimaryDark"
+    android:gravity="bottom">
+    <TextView
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_full_name"
+        android:textSize="@dimen/navigation_view_text_size"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/space_2"
+        android:layout_marginBottom="@dimen/space_2"/>
+</LinearLayout>

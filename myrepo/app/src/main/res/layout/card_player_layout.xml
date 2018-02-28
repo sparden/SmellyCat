@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/card_player_play_button"
+            android:layout_width="@dimen/player_main_icon_size"
+            android:layout_height="@dimen/player_main_icon_size"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/media_play" />
+
+        <ImageButton
+            android:id="@+id/card_player_previous_button"
+            android:layout_width="@dimen/player_main_icon_size"
+            android:layout_height="@dimen/player_main_icon_size"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/media_backward" />
+
+        <ImageButton
+            android:id="@+id/card_player_next_button"
+            android:layout_width="@dimen/player_main_icon_size"
+            android:layout_height="@dimen/player_main_icon_size"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/media_forward" />
+
+         <ImageButton
+            android:id="@+id/card_player_shuffle_button"
+            android:layout_width="@dimen/player_main_icon_size"
+            android:layout_height="@dimen/player_main_icon_size"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:scaleType="center"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/media_shuffle" />
+
+        <ImageButton
+            android:id="@+id/card_player_repeat_button"
+            android:layout_width="@dimen/player_main_icon_size"
+            android:layout_height="@dimen/player_main_icon_size"
+            android:scaleType="center"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/media_repeat" />
+
+</LinearLayout>

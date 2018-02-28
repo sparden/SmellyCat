@@ -46,8 +46,11 @@
 		<div id="container"></div>
 	</div>
 
-    <div id="parent-div">
-    </div>
+	<div id="parent-div">
+	</div>
+
+	<div id="parent-table-id" class="container_class">
+	</div>
 
 	<div id="smellsText">
 	</div>
@@ -205,6 +208,39 @@ $(function(){
     myDiv.appendChild(inner_div);
     parent_div.appendChild(myDiv);
 }
+});
+
+<!-- Code to create table classname cbo dit lnom noc nom rfc wmc -->
+$(function() {
+	var headers = ['className','cbo','dit','lcom','nom','rfc','wmc'];
+
+	var parent_table_div = document.getElementById("parent-table-id");
+
+	for(var t_no=0;t_no<classes.length;t_no++){
+		var data = classes[t_no]['activity'];
+		var newtable = document.createElement("table");
+		newtable.class = "table_class";
+		newtable.id = "table_class_"+t_no.toString();
+		var header_row = document.createElement("tr");
+		for(var i=0;i<headers.length;i++){
+			var header = document.createElement("th");
+			header.innerHTML = headers[i];
+			header_row.appendChild(header);
+		}
+		newtable.appendChild(header_row);
+
+		for(var i=0;i<data.length;++i){
+			var new_row = document.createElement("tr");
+			for(var j=0;j<headers.length;++j){
+				var new_col = document.createElement("td");
+				new_col.innerHTML = data[i][headers[j]];
+				new_row.appendChild(new_col);
+			}
+			newtable.appendChild(new_row);
+		}
+
+		parent_table_div.appendChild(newtable);
+	}
 });
 
 $(function() {

@@ -1,0 +1,149 @@
+apply plugin: 'com.android.application'
+
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+    maven { url 'https://maven.google.com' }
+}
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        versionCode 227
+        versionName "10.10.2"
+        minSdkVersion 16
+        targetSdkVersion 26
+        testApplicationId "org.liberty.android.fantastischmemo.test"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        multiDexEnabled true
+        archivesBaseName = "AnyMemo"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    buildTypes {
+        debug {
+            versionNameSuffix "-${getBuildString()}"
+        }
+        release {
+            minifyEnabled true
+            proguardFile 'proguard.cfg'
+        }
+    }
+
+    flavorDimensions "mode", "api"
+
+    productFlavors {
+        free {
+            applicationId "org.liberty.android.fantastischmemo"
+            dimension "mode"
+        }
+        pro {
+            applicationId "org.liberty.android.fantastischmemopro"
+            dimension "mode"
+        }
+        dev {
+            applicationId "org.liberty.android.fantastischmemodev"
+            dimension "mode"
+        }
+        api21 {
+            minSdkVersion 21
+            dimension "api"
+        }
+        api16 {
+            minSdkVersion 16
+            dimension "api"
+        }
+    }
+
+    lintOptions {
+        disable 'MissingTranslation'
+        disable 'ExtraTranslation'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-core-utils:26.0.2'
+    compile 'com.android.support:support-fragment:26.0.2'
+    compile 'com.android.support:cardview-v7:26.0.2'
+    compile 'com.android.support:design:26.0.2'
+    compile 'com.android.support:support-annotations:26.0.2'
+    compile 'com.android.support:customtabs:26.0.2'
+    compile 'com.android.support:multidex:1.0.1'
+
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
+
+    compile 'io.reactivex.rxjava2:rxjava:2.0.4'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    compile 'commons-io:commons-io:2.4'
+
+    compile 'com.google.guava:guava:20.0'
+    compile 'com.opencsv:opencsv:3.4'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.rarepebble:colorpicker:2.0.0'
+    compile 'com.simplify:ink:1.0.0'
+    compile 'com.google.dagger:dagger:2.8'
+    compile 'com.google.android.gms:play-services-auth:11.0.4'
+    provided 'javax.annotation:jsr250-api:1.0'
+
+    androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
+    androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
+    androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
+    androidTestCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    androidTestCompile 'com.android.support:support-annotations:26.0.2'
+
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
+}
+
+static def getBuildString () {
+    def date = new Date()
+    def formattedDate = date.format('yyMMdd')
+    return "b" + formattedDate
+}
+
+task copySecretsIfNotExists << {
+    if (file('src/main/java/org/liberty/android/fantastischmemo/AMSecrets.java').exists()) {
+        logger.warn('Removing AMSecrets.java since it is now in common package.')
+        delete 'src/main/java/org/liberty/android/fantastischmemo/AMSecrets.java'
+    }
+    if (!file('src/main/java/org/liberty/android/fantastischmemo/common/AMSecrets.java').exists()) {
+        logger.warn('Empty AMSecrets.java is created from AMSecrets.java.template. Please fill in the values.')
+        copy {
+            from "src/main/java/org/liberty/android/fantastischmemo/common/"
+            into "src/main/java/org/liberty/android/fantastischmemo/common/"
+            rename "AMSecrets.java.template", "AMSecrets.java"
+            include "AMSecrets.java.template"
+        }
+    }
+}
+
+preBuild.dependsOn copySecretsIfNotExists 

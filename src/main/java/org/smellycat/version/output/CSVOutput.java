@@ -21,7 +21,7 @@ public class CSVOutput implements Output{
 		this.output = new PrintStream(outputPath + "smells.csv"); 
 	}
 
-	@Override
+	
 	public void printOutput(Architecture arch, Map<String, List<CKNumber>> ckResults, Repository smellResults) {
 		
 		output.println("project,file,name,role,smell,note");
